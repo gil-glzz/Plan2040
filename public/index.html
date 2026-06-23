@@ -93,7 +93,11 @@
     .card{background:var(--white);border:1px solid var(--ink-150);border-radius:var(--r-xl);padding:30px 28px 26px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
     .card::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:var(--brand)}
     .card-title{font-size:18px;font-weight:800;letter-spacing:-.02em;color:var(--ink-900)}
-    .card-sub{font-size:13px;color:var(--ink-500);margin:5px 0 20px}
+    .card-sub{font-size:13px;color:var(--ink-500);margin:5px 0 18px}
+    .tipo-toggle{display:flex;gap:4px;padding:4px;background:var(--ink-100);border:1px solid var(--ink-150);border-radius:var(--r-pill);margin-bottom:20px}
+    .tipo-btn{flex:1;appearance:none;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:700;letter-spacing:-.01em;color:var(--ink-600);padding:11px 12px;border-radius:var(--r-pill);transition:all .2s var(--ease)}
+    .tipo-btn:hover{color:var(--ink-900)}
+    .tipo-btn.activo{background:var(--white);color:var(--brand);box-shadow:var(--shadow-sm)}
         .montos{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
     .btn-monto{
       appearance:none;cursor:pointer;font-family:inherit;
@@ -340,8 +344,12 @@
     <!-- ASIDE sticky form -->
     <aside class="col-aside" id="donar">
       <div class="card">
-        <p class="card-title">Elige tu donación mensual</p>
+        <p class="card-title">Elige tu donación</p>
         <p class="card-sub">Montos en pesos mexicanos (MXN)</p>
+        <div class="tipo-toggle" role="tablist" aria-label="Frecuencia de la donación">
+          <button class="tipo-btn activo" id="tipo-mensual" role="tab" onclick="cambiarTipo('mensual', this)">Mensual</button>
+          <button class="tipo-btn" id="tipo-unica" role="tab" onclick="cambiarTipo('unica', this)">Una sola vez</button>
+        </div>
         <div class="montos">
           <button class="btn-monto" data-monto="50" onclick="elegir(50, this)"><span class="t-disc" style="background:#F5823C"></span><span class="t-amount">$50</span><span class="t-label">Amigo</span><span class="t-sub">Das el primer paso</span></button>
           <button class="btn-monto activo" data-monto="200" onclick="elegir(200, this)"><span class="t-disc" style="background:#E81957"></span><span class="t-amount">$200</span><span class="t-label">Acompañante</span><span class="t-sub">Caminas con nosotros · el más elegido</span></button>
@@ -354,13 +362,13 @@
           <span class="prefix">$</span>
           <input type="number" id="monto-input" value="200" min="50" max="100000" step="1"
                  oninput="actualizarMonto(this.value)" onfocus="limpiarBotones()">
-          <span class="suffix">MXN / mes</span>
+          <span class="suffix" id="monto-suffix">MXN / mes</span>
         </div>
 
         <div class="resumen">
           <div>
-            <div class="r-lbl">Tu donación mensual</div>
-            <div class="r-sub">Se cobra automáticamente cada mes</div>
+            <div class="r-lbl" id="resumen-lbl">Tu donación mensual</div>
+            <div class="r-sub" id="resumen-sub">Se cobra automáticamente cada mes</div>
           </div>
           <div class="total" id="total-display">$200 MXN</div>
         </div>
@@ -368,13 +376,13 @@
         <div class="error-msg" id="error-msg"></div>
 
         <button class="btn-donar" id="btn-donar" onclick="irAStripe()">
-          <span class="btn-texto">Donar $<span id="btn-monto">200</span> MXN / mes</span>
+          <span class="btn-texto">Donar $<span id="btn-monto">200</span> MXN<span id="btn-periodo"> / mes</span></span>
           <span class="spinner"></span>
         </button>
 
         <div class="garantias">
           <span class="garantia"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg> Pago seguro con Stripe · cifrado bancario</span>
-          <span class="garantia"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/></svg> Cancela cuando quieras, sin permanencia</span>
+          <span class="garantia"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/></svg> <span id="garantia-cancel">Cancela cuando quieras, sin permanencia</span></span>
           <span class="garantia"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="m4 7 8 5 8-5"/></svg> Recibe tu comprobante por email</span>
         </div>
       </div>
@@ -455,9 +463,27 @@
 
   <script>
     let montoActual = 200;
+    let tipoActual = 'mensual';
 
     // Evita que el scroll del mouse cambie el monto en el campo numérico
     document.getElementById('monto-input').addEventListener('wheel', function(){ this.blur(); }, { passive: true });
+
+    function cambiarTipo(tipo, btn) {
+      tipoActual = tipo;
+      document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('activo'));
+      if (btn) btn.classList.add('activo');
+      actualizarTextos();
+      limpiarError();
+    }
+
+    function actualizarTextos() {
+      const mensual = tipoActual === 'mensual';
+      document.getElementById('monto-suffix').textContent = mensual ? 'MXN / mes' : 'MXN';
+      document.getElementById('resumen-lbl').textContent = mensual ? 'Tu donación mensual' : 'Tu donación única';
+      document.getElementById('resumen-sub').textContent = mensual ? 'Se cobra automáticamente cada mes' : 'Un solo cargo, sin compromisos';
+      document.getElementById('btn-periodo').textContent = mensual ? ' / mes' : '';
+      document.getElementById('garantia-cancel').textContent = mensual ? 'Cancela cuando quieras, sin permanencia' : 'Donación única, sin compromisos';
+    }
 
     function elegir(valor, btn) {
       montoActual = valor;
@@ -508,7 +534,7 @@
         const res = await fetch('/crear-sesion', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ monto: montoActual * 100 })
+          body: JSON.stringify({ monto: montoActual * 100, tipo: tipoActual })
         });
 
         const data = await res.json();
