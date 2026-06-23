@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Apoya el Plan 2040</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple-50: #EEEDFE;
+      --purple-400: #7F77DD;
+      --purple-600: #534AB7;
+      --purple-800: #3C3489;
+      --purple-900: #26215C;
+      --gray-100: #f5f5f5;
+      --gray-400: #888;
+      --gray-600: #555;
+      --border: #e0dff8;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #faf9ff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: white;
+      border-bottom: 0.5px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-badge {
+      width: 36px; height: 36px;
+      background: var(--purple-600);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 600; font-size: 14px;
+    }
+    header h1 { font-size: 16px; font-weight: 500; color: var(--purple-900); }
+    header span { font-size: 13px; color: var(--gray-400); }
+
+    .hero {
+      background: white;
+      border-bottom: 0.5px solid var(--border);
+      padding: 48px 24px;
+      text-align: center;
+    }
+    .hero h2 {
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--purple-900);
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+    .hero p {
+      color: var(--gray-600);
+      font-size: 16px;
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      padding: 28px 24px;
+      background: var(--purple-50);
+      border-bottom: 0.5px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .stat { text-align: center; }
+    .stat .num { font-size: 24px; font-weight: 600; color: var(--purple-600); }
+    .stat .lbl { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+    .card {
+      background: white;
+      border: 0.5px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 480px;
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--purple-900);
+      margin-bottom: 6px;
+    }
+    .card-sub {
+      font-size: 14px;
+      color: var(--gray-400);
+      margin-bottom: 28px;
+    }
+
+    .montos-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .btn-monto {
+      padding: 12px 8px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--purple-900);
+      transition: all .15s ease;
+      line-height: 1.3;
+    }
+    .btn-monto:hover { border-color: var(--purple-400); background: var(--purple-50); }
+    .btn-monto.activo {
+      border-color: var(--purple-600);
+      background: var(--purple-600);
+      color: white;
+    }
+    .btn-monto small { display: block; font-size: 11px; opacity: .75; margin-top: 2px; }
+
+    .input-wrap {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .input-wrap label {
+      display: block;
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-bottom: 6px;
+    }
+    .input-wrap .prefix {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+      font-size: 16px;
+      pointer-events: none;
+    }
+    .input-wrap input {
+      width: 100%;
+      padding: 13px 14px 13px 32px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--purple-900);
+      outline: none;
+      transition: border-color .15s;
+      -moz-appearance: textfield;
+    }
+    .input-wrap input::-webkit-outer-spin-button,
+    .input-wrap input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .input-wrap input:focus { border-color: var(--purple-400); }
+    .input-wrap .suffix {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      color: var(--gray-400);
+    }
+
+    .resumen {
+      background: var(--purple-50);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .resumen .lbl { font-size: 14px; color: var(--gray-600); }
+    .resumen .total { font-size: 20px; font-weight: 600; color: var(--purple-600); }
+    .resumen .periodo { font-size: 12px; color: var(--gray-400); }
+
+    .btn-donar {
+      width: 100%;
+      padding: 16px;
+      background: var(--purple-600);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-donar:hover { background: var(--purple-800); }
+    .btn-donar:disabled { opacity: .6; cursor: not-allowed; }
+    .btn-donar .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: none;
+    }
+    .btn-donar.cargando .spinner { display: block; }
+    .btn-donar.cargando .btn-texto { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .garantias {
+      display: flex;
+      gap: 16px;
+      margin-top: 18px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .garantia {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+    .garantia svg { opacity: .6; }
+
+    .error-msg {
+      background: #fff0f0;
+      color: #c0392b;
+      border: 0.5px solid #f5c6c6;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .error-msg.visible { display: block; }
+
+    @media (max-width: 480px) {
+      .card { padding: 28px 20px; }
+      .hero h2 { font-size: 24px; }
+      .montos-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-badge">P</div>
+    <div>
+      <h1>Plan 2040</h1>
+      <span>Procuración de fondos</span>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h2>Sé parte del cambio</h2>
+    <p>Tu donación mensual impulsa el Plan 2040. Cada peso importa y puedes cancelar cuando quieras.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="num" id="stat-donantes">—</div>
+      <div class="lbl">Donantes activos</div>
+    </div>
+    <div class="stat">
+      <div class="num" id="stat-meta">$500K</div>
+      <div class="lbl">Meta mensual MXN</div>
+    </div>
+    <div class="stat">
+      <div class="num">100%</div>
+      <div class="lbl">Va al programa</div>
+    </div>
+  </div>
+
+  <main>
+    <div class="card">
+      <p class="card-title">Elige tu donación mensual</p>
+      <p class="card-sub">Todos los montos son en pesos mexicanos (MXN)</p>
+
+      <div class="montos-grid">
+        <button class="btn-monto" onclick="elegir(50, this)">
+          $50<small>café al mes</small>
+        </button>
+        <button class="btn-monto activo" onclick="elegir(200, this)">
+          $200<small>recomendado</small>
+        </button>
+        <button class="btn-monto" onclick="elegir(500, this)">
+          $500<small>impulsor</small>
+        </button>
+        <button class="btn-monto" onclick="elegir(1000, this)">
+          $1,000<small>patrocinador</small>
+        </button>
+      </div>
+
+      <div class="input-wrap">
+        <label>O ingresa tu monto personalizado:</label>
+        <span class="prefix">$</span>
+        <input
+          type="number"
+          id="monto-input"
+          value="200"
+          min="50"
+          max="100000"
+          step="1"
+          oninput="actualizarMonto(this.value)"
+          onfocus="limpiarBotones()"
+        >
+        <span class="suffix">MXN / mes</span>
+      </div>
+
+      <div class="resumen">
+        <div>
+          <div class="lbl">Tu donación mensual</div>
+          <div class="periodo">Se cobra automáticamente</div>
+        </div>
+        <div class="total" id="total-display">$200 MXN</div>
+      </div>
+
+      <div class="error-msg" id="error-msg"></div>
+
+      <button class="btn-donar" id="btn-donar" onclick="irAStripe()">
+        <span class="btn-texto">Donar $<span id="btn-monto">200</span> MXN / mes</span>
+        <span class="spinner"></span>
+      </button>
+
+      <div class="garantias">
+        <div class="garantia">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Pago seguro con Stripe
+        </div>
+        <div class="garantia">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+          Cancela cuando quieras
+        </div>
+        <div class="garantia">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Recibe comprobante por email
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let montoActual = 200;
+
+    function elegir(valor, btn) {
+      montoActual = valor;
+      document.getElementById('monto-input').value = valor;
+      actualizarDisplay(valor);
+      document.querySelectorAll('.btn-monto').forEach(b => b.classList.remove('activo'));
+      if (btn) btn.classList.add('activo');
+      limpiarError();
+    }
+
+    function limpiarBotones() {
+      document.querySelectorAll('.btn-monto').forEach(b => b.classList.remove('activo'));
+    }
+
+    function actualizarMonto(valor) {
+      const num = parseInt(valor) || 0;
+      montoActual = num;
+      actualizarDisplay(num);
+      limpiarError();
+    }
+
+    function actualizarDisplay(valor) {
+      const fmt = valor ? `$${Number(valor).toLocaleString('es-MX')} MXN` : '—';
+      document.getElementById('total-display').textContent = fmt;
+      document.getElementById('btn-monto').textContent = valor ? Number(valor).toLocaleString('es-MX') : '—';
+    }
+
+    function limpiarError() {
+      document.getElementById('error-msg').classList.remove('visible');
+    }
+
+    function mostrarError(msg) {
+      const el = document.getElementById('error-msg');
+      el.textContent = msg;
+      el.classList.add('visible');
+    }
+
+    async function irAStripe() {
+      limpiarError();
+
+      if (!montoActual || montoActual < 50) {
+        return mostrarError('El monto mínimo es $50 MXN por mes.');
+      }
+      if (montoActual > 100000) {
+        return mostrarError('Para donaciones mayores a $100,000 MXN, contáctanos directamente.');
+      }
+
+      const btn = document.getElementById('btn-donar');
+      btn.classList.add('cargando');
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/crear-sesion', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ monto_sugerido: montoActual * 100 })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          mostrarError(data.error || 'Ocurrió un error. Intenta de nuevo.');
+          return;
+        }
+
+        window.location.href = data.url;
+
+      } catch (err) {
+        mostrarError('Error de conexión. Verifica tu internet e intenta de nuevo.');
+      } finally {
+        btn.classList.remove('cargando');
+        btn.disabled = false;
+      }
+    }
+  </script>
+
+</body>
+</html>
